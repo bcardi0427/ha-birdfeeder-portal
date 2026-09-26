@@ -89,6 +89,13 @@ class BirdFeederTodayViewsSensor(BirdFeederBaseSensor):
     def native_value(self) -> int:
         return self._server.stats.get("today_views", 0)
 
+    @property
+    def extra_state_attributes(self) -> Dict[str, Any]:
+        """Return today's referrers breakdown."""
+        return {
+            "referrers": self._server.stats.get("today_referrers", {}),
+        }
+
 
 class BirdFeederTodayQuestionsSensor(BirdFeederBaseSensor):
     """Sensor for today's voice questions asked."""
@@ -124,6 +131,13 @@ class BirdFeederTotalViewsSensor(BirdFeederBaseSensor):
     @property
     def native_value(self) -> int:
         return self._server.stats.get("total_page_views", 0)
+
+    @property
+    def extra_state_attributes(self) -> Dict[str, Any]:
+        """Return all-time referrers breakdown."""
+        return {
+            "referrers": self._server.stats.get("referrers", {}),
+        }
 
 
 class BirdFeederTotalQuestionsSensor(BirdFeederBaseSensor):

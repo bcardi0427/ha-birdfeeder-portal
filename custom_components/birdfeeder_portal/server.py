@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import time
+import urllib.parse
 from typing import Any, Dict, Optional
 from aiohttp import web
 import aiohttp
@@ -52,6 +53,8 @@ class BirdFeederPortalServer:
             "today_questions": 0,
             "yesterday_views": 0,
             "yesterday_questions": 0,
+            "referrers": {},
+            "today_referrers": {},
             "history": {},
             "last_date": "",
         }
@@ -98,15 +101,59 @@ class BirdFeederPortalServer:
             self.stats["last_date"] = today_str
             self.stats["today_views"] = 0
             self.stats["today_questions"] = 0
+            self.stats["today_referrers"] = {}
             return True
         return False
 
-    async def _record_stat(self, metric: str) -> None:
+    @staticmethod
+    def _clean_referrer(referer: Optional[str]) -> str:
+        """Extract a clean source name from an HTTP Referer header."""
+        if not referer:
+            return "Direct / None"
+        try:
+            parsed = urllib.parse.urlparse(referer)
+            host = parsed.netloc.lower()
+            if not host:
+                return "Direct / None"
+            if ":" in host:
+                host = host.split(":")[0]
+            if "reddit.com" in host or "redd.it" in host:
+                return "reddit.com"
+            if "home-assistant.io" in host:
+                return "community.home-assistant.io"
+            if "discord" in host:
+                return "discord.com"
+            if "github.com" in host:
+                return "github.com"
+            if "google." in host:
+                return "google.com"
+            if "facebook.com" in host or "fb.com" in host:
+                return "facebook.com"
+            if "t.co" in host or "twitter.com" in host or "x.com" in host:
+                return "x.com"
+            if host in ("bf.bcardi.org", "birdfeeder.bcardi.org", "127.0.0.1", "localhost"):
+                return "Direct / Refresh"
+            return host
+        except Exception:
+            return "Direct / None"
+
+    async def _record_stat(self, metric: str, request: Optional[web.Request] = None) -> None:
         """Increment view or question counters and save."""
         self._check_date_rollover()
         if metric == "view":
             self.stats["total_page_views"] = self.stats.get("total_page_views", 0) + 1
             self.stats["today_views"] = self.stats.get("today_views", 0) + 1
+
+            if request is not None:
+                referer = request.headers.get("Referer")
+                source = self._clean_referrer(referer)
+                if "referrers" not in self.stats or not isinstance(self.stats["referrers"], dict):
+                    self.stats["referrers"] = {}
+                if "today_referrers" not in self.stats or not isinstance(self.stats["today_referrers"], dict):
+                    self.stats["today_referrers"] = {}
+                self.stats["referrers"][source] = self.stats["referrers"].get(source, 0) + 1
+                self.stats["today_referrers"][source] = self.stats["today_referrers"].get(source, 0) + 1
+
         elif metric == "question":
             self.stats["total_questions_asked"] = self.stats.get("total_questions_asked", 0) + 1
             self.stats["today_questions"] = self.stats.get("today_questions", 0) + 1
@@ -120,7 +167,7 @@ class BirdFeederPortalServer:
 
     async def handle_index(self, request: web.Request) -> web.Response:
         """Serve the portal single-page application."""
-        await self._record_stat("view")
+        await self._record_stat("view", request=request)
         index_path = os.path.join(self._frontend_dir, "index.html")
         if os.path.exists(index_path):
             with open(index_path, "r", encoding="utf-8") as f:

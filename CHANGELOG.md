@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.7] - 2026-09-26
+
+### Added
+- **HTTP Referrer Analytics & Tracking**: Captures incoming HTTP `Referer` headers from web visitors (identifying sources like `reddit.com`, `community.home-assistant.io`, `discord.com`, search engines, and direct visits).
+- **Referrer Sensor Attributes**: Exposes daily and all-time referrer breakdowns directly in Home Assistant as extra state attributes on `sensor.birdfeeder_today_views` and `sensor.birdfeeder_total_views`.
+- **API Analytics**: Adds `today_referrers` and `referrers` breakdown into `/api/stats` endpoint.
+
+---
+
 ## [1.0.6] - 2026-09-26
 
 ### Added
