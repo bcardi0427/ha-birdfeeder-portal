@@ -69,6 +69,8 @@ class BirdFeederPortalServer:
         """Register routes on the dedicated web application."""
         self.app.router.add_get("/", self.handle_index)
         self.app.router.add_get("/index.html", self.handle_index)
+        self.app.router.add_get("/stats", self.handle_stats_page)
+        self.app.router.add_get("/stats.html", self.handle_stats_page)
         self.app.router.add_get("/feeder_preview.jpg", self.handle_preview_image)
         self.app.router.add_get("/api/stats", self.handle_stats)
         self.app.router.add_get("/api/status", self.handle_status)
@@ -174,6 +176,15 @@ class BirdFeederPortalServer:
                 content = f.read()
             return web.Response(text=content, content_type="text/html", charset="utf-8")
         return web.Response(text="Bird Feeder Portal Frontend not found.", status=404)
+
+    async def handle_stats_page(self, request: web.Request) -> web.Response:
+        """Serve the dedicated analytics & stats dashboard."""
+        stats_path = os.path.join(self._frontend_dir, "stats.html")
+        if os.path.exists(stats_path):
+            with open(stats_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            return web.Response(text=content, content_type="text/html", charset="utf-8")
+        return web.Response(text="Stats page not found.", status=404)
 
     async def handle_preview_image(self, request: web.Request) -> web.Response:
         """Serve the preview/og image."""

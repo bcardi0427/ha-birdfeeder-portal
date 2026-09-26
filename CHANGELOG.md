@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.8] - 2026-09-26
+
+### Added
+- **Dedicated Analytics & Stats Dashboard (`/stats`)**: Added a responsive, dark-mode real-time analytics web dashboard (`/stats` and `/stats.html`) featuring live KPI cards (Today Views, Total Views, Today Questions, Total Questions), visual referral source progress bars (Reddit, HA Community, Discord, Search, Direct) with Today/All-Time toggles, and daily historical visitor logs.
+- **Portal Navigation**: Added a quick "📊 Analytics" link in the web portal footer connecting directly to the stats dashboard.
+
+---
+
 ## [1.0.7] - 2026-09-26
 
 ### Added

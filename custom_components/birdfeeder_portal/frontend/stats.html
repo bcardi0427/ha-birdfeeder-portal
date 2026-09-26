@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bird Feeder Portal Analytics</title>
+  <link rel="icon" href="/feeder_preview.jpg" type="image/jpeg">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --primary: #238636;
+      --accent: #58a6ff;
+      --text: #c9d1d9;
+      --text-bright: #ffffff;
+      --reddit: #ff4500;
+      --discord: #5865f2;
+      --ha: #03a9f4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.8; }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #1f6feb22;
+      color: #58a6ff;
+      border: 1px solid #1f6feb44;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3fb950;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(63, 185, 80, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); }
+    }
+    .header h1 {
+      font-size: 1.7rem;
+      color: var(--text-bright);
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header p {
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    @media (max-width: 480px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .metric-label {
+      font-size: 0.82rem;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+    .metric-sub {
+      font-size: 0.8rem;
+      color: #8b949e;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tab-pills {
+      display: inline-flex;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .tab-pill {
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-pill.active {
+      background: #21262d;
+      color: var(--text-bright);
+    }
+    .referrer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .referrer-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .referrer-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+    }
+    .referrer-name {
+      font-weight: 500;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .referrer-count {
+      color: #8b949e;
+      font-size: 0.82rem;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #21262d;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--accent);
+      transition: width 0.4s ease;
+    }
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      color: #8b949e;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 0.65rem 0.5rem;
+      border-bottom: 1px solid #21262d;
+    }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .badge-reddit { background: rgba(255, 69, 0, 0.2); color: #ff4500; }
+    .badge-ha { background: rgba(3, 169, 244, 0.2); color: #03a9f4; }
+    .badge-discord { background: rgba(88, 101, 242, 0.2); color: #7289da; }
+    .badge-github { background: rgba(163, 113, 247, 0.2); color: #a371f7; }
+    .badge-direct { background: rgba(139, 148, 158, 0.2); color: #8b949e; }
+    .footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6e7681;
+      padding: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-nav">
+      <a href="/" class="back-link">← Back to Feeder Portal</a>
+      <div class="status-badge">
+        <span class="dot"></span> Live Sync
+      </div>
+    </div>
+
+    <div class="header">
+      <h1>📊 Feeder Portal Analytics</h1>
+      <p>Visitor traffic, questions asked, and referral sources • Fruitland Park, FL</p>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">👁️ Today's Visits</div>
+        <div class="metric-value" id="valTodayViews">--</div>
+        <div class="metric-sub" id="subTodayViews">Unique page views today</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🌐 All-Time Visits</div>
+        <div class="metric-value" id="valTotalViews">--</div>
+        <div class="metric-sub" id="subTotalViews">Total cumulative visits</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">❓ Today's Questions</div>
+        <div class="metric-value" id="valTodayQuestions">--</div>
+        <div class="metric-sub">Voice questions answered today</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">💬 Total Questions</div>
+        <div class="metric-value" id="valTotalQuestions">--</div>
+        <div class="metric-sub">All-time voice queries</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>🔗 Referral Sources</span>
+        <div class="tab-pills">
+          <button class="tab-pill active" id="btnTodayRef" onclick="switchRefTab('today')">Today</button>
+          <button class="tab-pill" id="btnAllRef" onclick="switchRefTab('all')">All-Time</button>
+        </div>
+      </div>
+      <div id="referrersList" class="referrer-list">
+        <div style="color: #8b949e; font-size: 0.85rem;">Loading referrers...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📅 Daily History</span>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Page Visits</th>
+              <th>Voice Questions</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="3" style="color: #8b949e; text-align: center;">Loading history...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      Feeder Voice Assistant Portal • Direct integration with Home Assistant & Cloudflare Tunnel
+    </div>
+  </div>
+
+  <script>
+    let globalStats = null;
+    let currentRefTab = 'today';
+
+    function getBadgeClass(source) {
+      const s = source.toLowerCase();
+      if (s.includes('reddit')) return 'badge-reddit';
+      if (s.includes('home-assistant')) return 'badge-ha';
+      if (s.includes('discord')) return 'badge-discord';
+      if (s.includes('github')) return 'badge-github';
+      return 'badge-direct';
+    }
+
+    function switchRefTab(tab) {
+      currentRefTab = tab;
+      document.getElementById('btnTodayRef').classList.toggle('active', tab === 'today');
+      document.getElementById('btnAllRef').classList.toggle('active', tab === 'all');
+      renderReferrers();
+    }
+
+    function renderReferrers() {
+      if (!globalStats) return;
+      const container = document.getElementById('referrersList');
+      const refs = (currentRefTab === 'today') 
+        ? (globalStats.today_referrers || {}) 
+        : (globalStats.referrers || {});
+
+      const entries = Object.entries(refs).sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        container.innerHTML = '<div style="color: #8b949e; font-size: 0.85rem; padding: 0.5rem 0;">No referrer data recorded yet for this period.</div>';
+        return;
+      }
+
+      const total = entries.reduce((acc, curr) => acc + curr[1], 0) || 1;
+      container.innerHTML = entries.map(([name, count]) => {
+        const pct = Math.round((count / total) * 100);
+        const badge = getBadgeClass(name);
+        return `
+          <div class="referrer-item">
+            <div class="referrer-header">
+              <span class="referrer-name">
+                <span class="badge ${badge}">${name}</span>
+              </span>
+              <span class="referrer-count">${count} views (${pct}%)</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderHistory() {
+      if (!globalStats) return;
+      const tbody = document.getElementById('historyTableBody');
+      const history = globalStats.history || {};
+      const dates = Object.keys(history).sort().reverse();
+
+      let rowsHtml = '';
+      // Add today as current row
+      const todayStr = globalStats.last_date || 'Today';
+      rowsHtml += `
+        <tr style="font-weight: 600;">
+          <td>${todayStr} <span style="font-size:0.75rem; color:#3fb950; margin-left:4px;">(Current)</span></td>
+          <td>${globalStats.today_views || 0}</td>
+          <td>${globalStats.today_questions || 0}</td>
+        </tr>
+      `;
+
+      for (const d of dates) {
+        const item = history[d];
+        const v = (typeof item === 'object') ? (item.views || 0) : item;
+        const q = (typeof item === 'object') ? (item.questions || 0) : 0;
+        rowsHtml += `
+          <tr>
+            <td>${d}</td>
+            <td>${v}</td>
+            <td>${q}</td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        globalStats = await res.json();
+
+        document.getElementById('valTodayViews').textContent = globalStats.today_views || 0;
+        document.getElementById('valTotalViews').textContent = globalStats.total_page_views || 0;
+        document.getElementById('valTodayQuestions').textContent = globalStats.today_questions || 0;
+        document.getElementById('valTotalQuestions').textContent = globalStats.total_questions_asked || 0;
+
+        renderReferrers();
+        renderHistory();
+      } catch (err) {
+        console.error('Failed to load stats:', err);
+      }
+    }
+
+    loadStats();
+    setInterval(loadStats, 10000);
+  </script>
+</body>
+</html>
