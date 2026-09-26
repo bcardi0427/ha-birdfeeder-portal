@@ -1,8 +1,15 @@
 # Bird Feeder Voice Assistant Portal (Home Assistant HACS Integration)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/default)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-bf.bcardi.org-41BDF5?style=flat&logo=cloudflare)](https://bf.bcardi.org/)
 
 A dedicated Home Assistant custom integration and interactive web portal that monitors your bird feeder in real-time using **Frigate NVR** (running either as a **Home Assistant Add-on** or on a **separate external server/LXC/Docker host**). It answers visitor questions with spoken voice audio powered by **Home Assistant Assist / Gemini** and **Text-to-Speech (TTS)**.
+
+👉 **Live Demo**: [https://bf.bcardi.org/](https://bf.bcardi.org/)
+
+<p align="center">
+  <img src="docs/screenshot.png" alt="Bird Feeder Voice Assistant Portal Preview" width="750">
+</p>
 
 ---
 
@@ -120,7 +127,7 @@ If Frigate runs on a dedicated mini-PC, Proxmox LXC container, Unraid server, or
 
 If you wish to make the web portal accessible to outside visitors without granting them access to your Home Assistant dashboard:
 
-1. In Cloudflare Zero Trust (or your reverse proxy of choice), create a public hostname (e.g. `birdfeeder.yourdomain.com`).
+1. In Cloudflare Zero Trust (or your reverse proxy of choice), create a public hostname (e.g. `bf.yourdomain.com` or see our live demo at `https://bf.bcardi.org/`).
 2. Point the service URL directly to your Home Assistant's IP and the configured portal port:
    ```
    http://<YOUR_HA_IP>:8195
