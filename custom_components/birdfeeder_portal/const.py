@@ -12,7 +12,7 @@ CONF_TTS_VOICE = "tts_voice"
 
 # Default configuration values
 DEFAULT_PORT = 8095
-DEFAULT_FRIGATE_URL = "http://192.168.1.90:5000"
+DEFAULT_FRIGATE_URL = "http://ccab4aaf-frigate:5000"
 DEFAULT_CAMERA_NAME = "feeder"
 DEFAULT_CONVERSATION_AGENT = "conversation.google_ai_conversation"
 DEFAULT_TTS_ENGINE = "tts.home_assistant_cloud"

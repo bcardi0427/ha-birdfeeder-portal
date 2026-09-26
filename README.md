@@ -81,7 +81,7 @@ A dedicated Home Assistant custom integration and interactive web portal that mo
 
 | Setting | Example / Default | Description |
 | :--- | :--- | :--- |
-| **Frigate NVR URL** | `http://ccab4aaf-frigate:5000` *(Add-on)*<br>`http://192.168.1.90:5000` *(External)* | URL to your Frigate instance. See [Frigate Setup Options](#-frigate-setup-options) below. |
+| **Frigate NVR URL** | `http://ccab4aaf-frigate:5000` *(Add-on)*<br>`http://192.168.1.100:5000` *(External)* | URL to your Frigate instance. See [Frigate Setup Options](#-frigate-setup-options) below. |
 | **Frigate Camera Name** | `feeder` | The name of the camera tracking the feeder inside your Frigate `config.yml`. |
 | **Dedicated Port** | `8095` | Local TCP port for the portal web server. |
 | **Conversation Agent** | `conversation.google_ai_conversation` | The entity ID of your Home Assistant conversation agent (Gemini, ChatGPT, Ollama, etc.). |
@@ -107,7 +107,7 @@ If you use the official Home Assistant Frigate Add-on on the same machine:
 If Frigate runs on a dedicated mini-PC, Proxmox LXC container, Unraid server, or separate Docker host:
 - Set **Frigate NVR URL** to the LAN IP and port of that machine, for example:
   ```
-  http://192.168.1.90:5000
+  http://192.168.1.100:5000
   ```
 - Ensure port `5000` on the Frigate host is accessible across your local network from Home Assistant.
 
