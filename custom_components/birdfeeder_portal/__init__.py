@@ -5,6 +5,8 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from aiohttp import web
+from homeassistant.components.http import HomeAssistantView
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -30,6 +32,47 @@ from .server import BirdFeederPortalServer
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [Platform.SENSOR]
+
+
+class BirdFeederRedirectView(HomeAssistantView):
+    """View to redirect sidebar iframe to the dedicated portal port."""
+
+    url = "/api/birdfeeder_portal/redirect"
+    name = "api:birdfeeder_portal:redirect"
+    requires_auth = False
+
+    def __init__(self, port: int) -> None:
+        self.port = port
+
+    async def get(self, request: web.Request) -> web.Response:
+        html = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bird Feeder Portal</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 3rem 1rem; }}
+    a {{ color: #58a6ff; text-decoration: none; font-size: 1.1rem; }}
+    .btn {{ display: inline-block; background: #238636; color: white; padding: 0.8rem 1.6rem; border-radius: 8px; margin-top: 1.2rem; text-decoration: none; font-weight: bold; }}
+    .btn:hover {{ background: #2ea043; }}
+  </style>
+</head>
+<body>
+  <h2>Loading Bird Feeder Portal...</h2>
+  <p>Connecting to port {self.port} on your network.</p>
+  <p><a id="open-link" class="btn" target="_blank" href="#">Open Portal in New Tab</a></p>
+  <script>
+    const port = {self.port};
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    const targetUrl = `${{protocol}}//${{hostname}}:${{port}}/`;
+    const link = document.getElementById('open-link');
+    if (link) link.href = targetUrl;
+    window.location.replace(targetUrl);
+  </script>
+</body>
+</html>"""
+        return web.Response(text=html, content_type="text/html", charset="utf-8")
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -108,8 +151,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # 4. Set up platform entities (sensors)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # 5. Register sidebar panel if possible
+    # 5. Register HTTP redirect view & sidebar panel
     try:
+        view = hass.data[DOMAIN].get("redirect_view")
+        if not view:
+            view = BirdFeederRedirectView(port)
+            hass.http.register_view(view)
+            hass.data[DOMAIN]["redirect_view"] = view
+        else:
+            view.port = port
+
         from homeassistant.components.frontend import async_register_built_in_panel
         async_register_built_in_panel(
             hass,
@@ -117,7 +168,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             sidebar_title="Bird Feeder",
             sidebar_icon="mdi:bird",
             frontend_url_path="birdfeeder_portal",
-            config={"url": f":{port}/"},
+            config={"url": "/api/birdfeeder_portal/redirect"},
             require_admin=False,
         )
     except Exception as err:

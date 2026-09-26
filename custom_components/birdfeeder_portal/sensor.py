@@ -7,6 +7,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
@@ -60,8 +61,8 @@ class BirdFeederBaseSensor(SensorEntity):
     async def async_added_to_hass(self) -> None:
         """Register update callback."""
         self.async_on_remove(
-            self.hass.helpers.dispatcher.async_dispatcher_connect(
-                f"{DOMAIN}_stats_updated", self._handle_stats_update
+            async_dispatcher_connect(
+                self.hass, f"{DOMAIN}_stats_updated", self._handle_stats_update
             )
         )
 
