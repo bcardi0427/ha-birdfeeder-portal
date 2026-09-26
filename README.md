@@ -8,7 +8,13 @@ A dedicated Home Assistant custom integration and interactive web portal that mo
 👉 **Live Demo**: [https://bf.bcardi.org/](https://bf.bcardi.org/)
 
 <p align="center">
+  <b>Standalone Web Portal (Live Demo: <a href="https://bf.bcardi.org/">bf.bcardi.org</a>)</b><br>
   <img src="docs/screenshot.png" alt="Bird Feeder Voice Assistant Portal Preview" width="750">
+</p>
+
+<p align="center">
+  <b>Native Home Assistant Sidebar Panel</b><br>
+  <img src="docs/ha_sidebar.png" alt="Home Assistant Sidebar Integration" width="750">
 </p>
 
 ---
