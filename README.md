@@ -129,6 +129,12 @@ If you wish to make the web portal accessible to outside visitors without granti
 
 ---
 
+## 📜 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes across all releases.
+
+---
+
 ## 📄 License
 
 This project is open-source and licensed under the [MIT License](LICENSE).
