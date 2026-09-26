@@ -8,7 +8,7 @@ A dedicated Home Assistant custom integration and interactive web portal that mo
 
 ## 🌟 Key Features
 
-- **Dedicated Web Portal**: Runs an async web server directly inside Home Assistant on your chosen port (default `8095`).
+- **Dedicated Web Portal**: Runs an async web server directly inside Home Assistant on your chosen port (default `8195`).
 - **Flexible Frigate Connectivity**:
   - Works with the **Home Assistant Frigate Add-on** (`http://ccab4aaf-frigate:5000` or `http://127.0.0.1:5000`).
   - Works with **External Frigate Servers** (`http://<YOUR_FRIGATE_IP>:5000`, e.g. Docker, Proxmox LXC, TrueNAS, Unraid, Raspberry Pi, or bare-metal).
@@ -34,7 +34,7 @@ A dedicated Home Assistant custom integration and interactive web portal that mo
                                ┌────────────────────────────────────────────────────────┐
                                │                HOME ASSISTANT HOST                     │
                                │                                                        │
-[Public / Local Visitors] ────►│  Port 8095: Bird Feeder Voice Portal Web Server        │
+[Public / Local Visitors] ────►│  Port 8195: Bird Feeder Voice Portal Web Server        │
                                │  ├── Serves responsive HTML5/JS frontend               │
                                │  ├── Tracks visitor & question statistics              │
                                │  └── Exposes native HA sensors (views, questions, etc) │
@@ -85,13 +85,14 @@ A dedicated Home Assistant custom integration and interactive web portal that mo
 | **Frigate Camera Name** | `feeder` | The name of the camera tracking the feeder inside your Frigate `config.yml`. |
 | **Frigate Username** *(Optional)* | *(empty)* | HTTP Basic Auth username (only if your Frigate instance requires a login). |
 | **Frigate Password** *(Optional)* | *(empty)* | HTTP Basic Auth password (only if your Frigate instance requires a login). |
-| **Dedicated Port** | `8095` | Local TCP port for the portal web server. |
+| **Dedicated Port** | `8195` | Local TCP port for the portal web server (e.g. `8195` or any free port). |
 | **Conversation Agent** | `conversation.google_ai_conversation` | The entity ID of your Home Assistant conversation agent (Gemini, ChatGPT, Ollama, etc.). |
 | **TTS Engine** | `tts.home_assistant_cloud` | The entity ID of your TTS engine (Nabu Casa Cloud, Piper, etc.). |
 | **TTS Voice** | `AmberNeural` | Desired voice name supported by your TTS engine. |
 
 > [!TIP]
 > You can change any of these settings at any time by navigating to **Settings ➔ Devices & Services ➔ Bird Feeder Voice Portal ➔ Configure**.
+> If port `8095` is used by **Music Assistant**, use `8195` or another unused port.
 
 ---
 
@@ -122,7 +123,7 @@ If you wish to make the web portal accessible to outside visitors without granti
 1. In Cloudflare Zero Trust (or your reverse proxy of choice), create a public hostname (e.g. `birdfeeder.yourdomain.com`).
 2. Point the service URL directly to your Home Assistant's IP and the configured portal port:
    ```
-   http://<YOUR_HA_IP>:8095
+   http://<YOUR_HA_IP>:8195
    ```
 3. The portal serves a standalone responsive web application that allows visitors to ask questions, listen to TTS audio, and see the latest bird snapshot without requiring Home Assistant user authentication.
 

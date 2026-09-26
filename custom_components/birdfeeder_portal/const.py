@@ -13,7 +13,7 @@ CONF_TTS_ENGINE = "tts_engine"
 CONF_TTS_VOICE = "tts_voice"
 
 # Default configuration values
-DEFAULT_PORT = 8095
+DEFAULT_PORT = 8195
 DEFAULT_FRIGATE_URL = "http://ccab4aaf-frigate:5000"
 DEFAULT_CAMERA_NAME = "feeder"
 DEFAULT_CONVERSATION_AGENT = "conversation.google_ai_conversation"
