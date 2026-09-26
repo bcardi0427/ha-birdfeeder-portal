@@ -277,19 +277,37 @@ class BirdFeederPortalServer:
             else:
                 speech_text = f"The feeder is active in Fruitland Park with {summary['total_visits_today']} visits recorded today."
 
-        # 3. Generate Cloud TTS Audio
+        # 3. Generate Cloud TTS Audio using modern HA media_source API
         audio_proxy_url = ""
         try:
-            tts_manager = self.hass.data.get("tts")
-            if tts_manager and hasattr(tts_manager, "async_get_url"):
-                audio_proxy_url = await tts_manager.async_get_url(
-                    self.tts_engine,
-                    speech_text,
-                    language="en-US",
-                    options={"voice": self.tts_voice},
-                )
+            from homeassistant.components.media_source import async_resolve_media
+            from homeassistant.components.tts.media_source import generate_media_source_id
+
+            media_id = generate_media_source_id(
+                self.hass,
+                speech_text,
+                engine=self.tts_engine,
+                language="en-US",
+                options={"voice": self.tts_voice} if self.tts_voice else None,
+            )
+            item = await async_resolve_media(self.hass, media_id, None)
+            if item and item.url:
+                audio_proxy_url = item.url
         except Exception as err:
-            _LOGGER.debug("Direct TTS manager call exception: %s", err)
+            _LOGGER.debug("Modern media_source TTS resolution failed, trying fallback: %s", err)
+
+        if not audio_proxy_url:
+            try:
+                tts_manager = self.hass.data.get("tts")
+                if tts_manager and hasattr(tts_manager, "async_get_url"):
+                    audio_proxy_url = await tts_manager.async_get_url(
+                        self.tts_engine,
+                        speech_text,
+                        language="en-US",
+                        options={"voice": self.tts_voice},
+                    )
+            except Exception as err:
+                _LOGGER.debug("Direct TTS manager call exception: %s", err)
 
         # Fallback to internal HTTP request to HA /api/tts_get_url
         if not audio_proxy_url:

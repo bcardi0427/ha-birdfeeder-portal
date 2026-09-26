@@ -307,8 +307,15 @@
             audioPlayer.src = '/api/audio?path=' + encodeURIComponent(data.audio_path);
             audioRow.style.display = 'flex';
             audioPlayer.play().catch(e => {
-              console.log('Autoplay blocked by browser policy, user tap needed:', e);
+              console.log('Autoplay blocked by browser policy:', e);
+              if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(data.text);
+                window.speechSynthesis.speak(u);
+              }
             });
+          } else if ('speechSynthesis' in window && data.text) {
+            const u = new SpeechSynthesisUtterance(data.text);
+            window.speechSynthesis.speak(u);
           }
 
           if (data.summary && data.summary.last_visit && data.summary.last_visit.id) {
