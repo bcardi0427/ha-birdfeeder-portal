@@ -83,6 +83,8 @@ A dedicated Home Assistant custom integration and interactive web portal that mo
 | :--- | :--- | :--- |
 | **Frigate NVR URL** | `http://ccab4aaf-frigate:5000` *(Add-on)*<br>`http://192.168.1.100:5000` *(External)* | URL to your Frigate instance. See [Frigate Setup Options](#-frigate-setup-options) below. |
 | **Frigate Camera Name** | `feeder` | The name of the camera tracking the feeder inside your Frigate `config.yml`. |
+| **Frigate Username** *(Optional)* | *(empty)* | HTTP Basic Auth username (only if your Frigate instance requires a login). |
+| **Frigate Password** *(Optional)* | *(empty)* | HTTP Basic Auth password (only if your Frigate instance requires a login). |
 | **Dedicated Port** | `8095` | Local TCP port for the portal web server. |
 | **Conversation Agent** | `conversation.google_ai_conversation` | The entity ID of your Home Assistant conversation agent (Gemini, ChatGPT, Ollama, etc.). |
 | **TTS Engine** | `tts.home_assistant_cloud` | The entity ID of your TTS engine (Nabu Casa Cloud, Piper, etc.). |

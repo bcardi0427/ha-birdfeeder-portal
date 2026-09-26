@@ -11,7 +11,9 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     CONF_CAMERA_NAME,
     CONF_CONVERSATION_AGENT,
+    CONF_FRIGATE_PASSWORD,
     CONF_FRIGATE_URL,
+    CONF_FRIGATE_USERNAME,
     CONF_PORT,
     CONF_TTS_ENGINE,
     CONF_TTS_VOICE,
@@ -43,13 +45,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     config = {**entry.data, **entry.options}
     frigate_url = config.get(CONF_FRIGATE_URL, DEFAULT_FRIGATE_URL)
     camera_name = config.get(CONF_CAMERA_NAME, DEFAULT_CAMERA_NAME)
+    frigate_username = config.get(CONF_FRIGATE_USERNAME)
+    frigate_password = config.get(CONF_FRIGATE_PASSWORD)
     port = config.get(CONF_PORT, DEFAULT_PORT)
     conversation_agent = config.get(CONF_CONVERSATION_AGENT, DEFAULT_CONVERSATION_AGENT)
     tts_engine = config.get(CONF_TTS_ENGINE, DEFAULT_TTS_ENGINE)
     tts_voice = config.get(CONF_TTS_VOICE, DEFAULT_TTS_VOICE)
 
     # 1. Initialize Frigate Client
-    frigate_client = FrigateClient(hass, frigate_url, camera_name)
+    frigate_client = FrigateClient(
+        hass=hass,
+        frigate_url=frigate_url,
+        camera_name=camera_name,
+        username=frigate_username,
+        password=frigate_password,
+    )
 
     # 2. Coordinator for periodic status polling (sensors)
     async def async_update_data():

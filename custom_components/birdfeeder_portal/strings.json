@@ -7,6 +7,8 @@
         "data": {
           "frigate_url": "Frigate NVR URL (e.g. http://ccab4aaf-frigate:5000 for HA Add-on, or http://192.168.1.100:5000 for external/Docker)",
           "camera_name": "Frigate Camera Name",
+          "frigate_username": "Frigate Username (Optional, if using HTTP Basic Auth)",
+          "frigate_password": "Frigate Password (Optional, if using HTTP Basic Auth)",
           "port": "Dedicated Web Portal Port",
           "conversation_agent": "Home Assistant Conversation Agent Entity",
           "tts_engine": "TTS Engine Entity ID",
@@ -26,6 +28,8 @@
         "data": {
           "frigate_url": "Frigate NVR URL (e.g. http://ccab4aaf-frigate:5000 for HA Add-on, or http://192.168.1.100:5000 for external/Docker)",
           "camera_name": "Frigate Camera Name",
+          "frigate_username": "Frigate Username (Optional, if using HTTP Basic Auth)",
+          "frigate_password": "Frigate Password (Optional, if using HTTP Basic Auth)",
           "port": "Dedicated Web Portal Port",
           "conversation_agent": "Home Assistant Conversation Agent Entity",
           "tts_engine": "TTS Engine Entity ID",

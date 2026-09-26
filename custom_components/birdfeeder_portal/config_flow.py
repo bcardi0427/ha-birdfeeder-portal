@@ -11,7 +11,9 @@ from homeassistant.data_entry_flow import FlowResult
 from .const import (
     CONF_CAMERA_NAME,
     CONF_CONVERSATION_AGENT,
+    CONF_FRIGATE_PASSWORD,
     CONF_FRIGATE_URL,
+    CONF_FRIGATE_USERNAME,
     CONF_PORT,
     CONF_TTS_ENGINE,
     CONF_TTS_VOICE,
@@ -52,6 +54,8 @@ class BirdFeederPortalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 vol.Required(CONF_FRIGATE_URL, default=DEFAULT_FRIGATE_URL): str,
                 vol.Required(CONF_CAMERA_NAME, default=DEFAULT_CAMERA_NAME): str,
+                vol.Optional(CONF_FRIGATE_USERNAME, default=""): str,
+                vol.Optional(CONF_FRIGATE_PASSWORD, default=""): str,
                 vol.Required(CONF_PORT, default=DEFAULT_PORT): int,
                 vol.Required(CONF_CONVERSATION_AGENT, default=DEFAULT_CONVERSATION_AGENT): str,
                 vol.Required(CONF_TTS_ENGINE, default=DEFAULT_TTS_ENGINE): str,
@@ -93,6 +97,8 @@ class BirdFeederPortalOptionsFlowHandler(config_entries.OptionsFlow):
             {
                 vol.Required(CONF_FRIGATE_URL, default=data.get(CONF_FRIGATE_URL, DEFAULT_FRIGATE_URL)): str,
                 vol.Required(CONF_CAMERA_NAME, default=data.get(CONF_CAMERA_NAME, DEFAULT_CAMERA_NAME)): str,
+                vol.Optional(CONF_FRIGATE_USERNAME, default=data.get(CONF_FRIGATE_USERNAME, "")): str,
+                vol.Optional(CONF_FRIGATE_PASSWORD, default=data.get(CONF_FRIGATE_PASSWORD, "")): str,
                 vol.Required(CONF_PORT, default=data.get(CONF_PORT, DEFAULT_PORT)): int,
                 vol.Required(CONF_CONVERSATION_AGENT, default=data.get(CONF_CONVERSATION_AGENT, DEFAULT_CONVERSATION_AGENT)): str,
                 vol.Required(CONF_TTS_ENGINE, default=data.get(CONF_TTS_ENGINE, DEFAULT_TTS_ENGINE)): str,

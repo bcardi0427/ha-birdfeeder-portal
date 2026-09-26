@@ -14,10 +14,18 @@ _LOGGER = logging.getLogger(__name__)
 class FrigateClient:
     """Async client to communicate with the external Frigate NVR REST API."""
 
-    def __init__(self, hass: HomeAssistant, frigate_url: str, camera_name: str) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        frigate_url: str,
+        camera_name: str,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+    ) -> None:
         self.hass = hass
         self.frigate_url = frigate_url.rstrip("/")
         self.camera_name = camera_name
+        self.auth = aiohttp.BasicAuth(username, password) if username and password else None
 
     @property
     def session(self) -> aiohttp.ClientSession:
@@ -42,7 +50,7 @@ class FrigateClient:
 
         events = []
         try:
-            async with self.session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=6)) as resp:
+            async with self.session.get(url, params=params, auth=self.auth, timeout=aiohttp.ClientTimeout(total=6)) as resp:
                 if resp.status == 200:
                     events = await resp.json()
                 else:
@@ -57,7 +65,7 @@ class FrigateClient:
                     "camera": self.camera_name,
                     "limit": "10",
                 }
-                async with self.session.get(url, params=fallback_params, timeout=aiohttp.ClientTimeout(total=6)) as resp:
+                async with self.session.get(url, params=fallback_params, auth=self.auth, timeout=aiohttp.ClientTimeout(total=6)) as resp:
                     if resp.status == 200:
                         events = await resp.json()
             except Exception as err:
@@ -101,7 +109,7 @@ class FrigateClient:
         """Fetch snapshot image bytes for an event."""
         url = f"{self.frigate_url}/api/events/{event_id}/snapshot.jpg"
         try:
-            async with self.session.get(url, timeout=aiohttp.ClientTimeout(total=8)) as resp:
+            async with self.session.get(url, auth=self.auth, timeout=aiohttp.ClientTimeout(total=8)) as resp:
                 if resp.status == 200:
                     return await resp.read()
                 _LOGGER.warning("Frigate snapshot error status %s for event %s", resp.status, event_id)
