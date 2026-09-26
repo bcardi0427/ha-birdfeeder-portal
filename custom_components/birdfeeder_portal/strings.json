@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure Bird Feeder Voice Portal",
+        "description": "Set up your dedicated Bird Feeder Voice Assistant web portal.",
+        "data": {
+          "frigate_url": "Frigate NVR URL (e.g. http://192.168.1.90:5000)",
+          "camera_name": "Frigate Camera Name",
+          "port": "Dedicated Web Portal Port",
+          "conversation_agent": "Home Assistant Conversation Agent Entity",
+          "tts_engine": "TTS Engine Entity ID",
+          "tts_voice": "TTS Voice Name"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "A portal is already configured on this port."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Bird Feeder Portal Options",
+        "description": "Adjust portal settings, Frigate URL, or voice preferences.",
+        "data": {
+          "frigate_url": "Frigate NVR URL (e.g. http://192.168.1.90:5000)",
+          "camera_name": "Frigate Camera Name",
+          "port": "Dedicated Web Portal Port",
+          "conversation_agent": "Home Assistant Conversation Agent Entity",
+          "tts_engine": "TTS Engine Entity ID",
+          "tts_voice": "TTS Voice Name"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "today_views": { "name": "Today Views" },
+      "today_questions": { "name": "Today Questions" },
+      "total_views": { "name": "Total Views" },
+      "total_questions": { "name": "Total Questions" },
+      "last_visitor": { "name": "Last Visitor Species" },
+      "visits_today": { "name": "Bird Visits Today" }
+    }
+  }
+}

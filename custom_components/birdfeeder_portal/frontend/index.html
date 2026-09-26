@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bird Feeder Voice Assistant</title>
+
+  <!-- Open Graph / Facebook Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://birdfeeder.bcardi.org/">
+  <meta property="og:title" content="Jerry's Bird Feeder Voice Assistant">
+  <meta property="og:description" content="Tap to ask real-time questions about birds visiting Jerry's feeder in Fruitland Park, Florida, and listen to the voice assistant answers!">
+  <meta property="og:image" content="/feeder_preview.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jerry's Bird Feeder Voice Assistant">
+  <meta name="twitter:description" content="Tap to ask real-time questions about birds visiting Jerry's feeder in Fruitland Park, Florida, and listen to the voice assistant answers!">
+  <meta name="twitter:image" content="/feeder_preview.jpg">
+
+  <link rel="icon" href="/feeder_preview.jpg" type="image/jpeg">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --primary: #238636;
+      --primary-hover: #2ea043;
+      --accent: #58a6ff;
+      --text: #c9d1d9;
+      --text-bright: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .header {
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+      color: var(--text-bright);
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .header p {
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #1f6feb22;
+      color: #58a6ff;
+      border: 1px solid #1f6feb44;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3fb950;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(63, 185, 80, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); }
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    .ask-btn {
+      background: #21262d;
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .ask-btn:hover:not(:disabled) {
+      background: #30363d;
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .ask-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .ask-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .ask-btn .icon {
+      font-size: 1.3rem;
+    }
+    .response-card {
+      display: none;
+      border-left: 4px solid var(--accent);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .response-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+    }
+    .audio-player-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #0d1117;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+    }
+    .speaking-indicator {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 16px;
+    }
+    .speaking-indicator span {
+      width: 3px;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: soundWave 1.2s infinite ease-in-out;
+    }
+    .speaking-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .speaking-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes soundWave {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+    .snapshot-box {
+      margin-top: 0.75rem;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .snapshot-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .footer-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6e7681;
+      padding-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🐦 Feeder Voice Assistant</h1>
+      <p>Fruitland Park, Florida Feeder Station</p>
+      <div class="status-badge">
+        <span class="dot"></span> Powered by Nabu Casa Cloud Voice & Frigate AI
+      </div>
+    </div>
+
+    <!-- Quick Question Buttons -->
+    <div class="card">
+      <div class="card-title">Tap a question to ask</div>
+      <div class="btn-grid">
+        <button class="ask-btn" onclick="askQuestion('Who was the last bird at the feeder?')">
+          <span class="icon">🐦</span>
+          <span>Who was the last bird at the feeder?</span>
+        </button>
+        <button class="ask-btn" onclick="askQuestion('What birds have visited today?')">
+          <span class="icon">📊</span>
+          <span>What birds have visited today?</span>
+        </button>
+        <button class="ask-btn" onclick="askQuestion('Is there any bird eating right now?')">
+          <span class="icon">🔍</span>
+          <span>Is there any bird eating right now?</span>
+        </button>
+        <button class="ask-btn" onclick="askQuestion('Tell me an interesting bird fact about our feeder visitors.')">
+          <span class="icon">🌟</span>
+          <span>Tell me a fun bird fact</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Voice Response Card -->
+    <div id="responseCard" class="card response-card">
+      <div class="card-title" id="responseStatus">Spoken Response</div>
+      <div class="response-text" id="responseText">Thinking...</div>
+      
+      <div class="audio-player-row" id="audioRow" style="display:none;">
+        <div class="speaking-indicator">
+          <span></span><span></span><span></span>
+        </div>
+        <audio id="audioPlayer" controls autoplay style="width: 100%; height: 32px;"></audio>
+      </div>
+
+      <div id="snapshotBox" class="snapshot-box" style="display:none;">
+        <img id="snapshotImg" src="" alt="Latest Bird">
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Direct audio streamed from Home Assistant Cloud Voice<br>
+      <span id="statsLine" style="margin-top: 4px; display: inline-block; opacity: 0.85;">Loading stats...</span>
+    </div>
+  </div>
+
+  <script>
+    let convId = null;
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const s = await res.json();
+        document.getElementById('statsLine').textContent =
+          `👀 Page Visits: ${s.total_page_views} (${s.today_views} today) • 💬 Questions Asked: ${s.total_questions_asked}`;
+      } catch (e) {
+        console.log('Stats error:', e);
+      }
+    }
+    loadStats();
+
+    async function askQuestion(prompt) {
+      const respCard = document.getElementById('responseCard');
+      const respText = document.getElementById('responseText');
+      const respStatus = document.getElementById('responseStatus');
+      const audioRow = document.getElementById('audioRow');
+      const audioPlayer = document.getElementById('audioPlayer');
+      const snapshotBox = document.getElementById('snapshotBox');
+      const snapshotImg = document.getElementById('snapshotImg');
+      const buttons = document.querySelectorAll('.ask-btn');
+
+      respCard.style.display = 'block';
+      respText.textContent = 'Listening & thinking...';
+      respStatus.textContent = 'Processing Voice Query...';
+      audioRow.style.display = 'none';
+      snapshotBox.style.display = 'none';
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: prompt, conversation_id: convId })
+        });
+        const data = await res.json();
+
+        if (data.text) {
+          respText.textContent = data.text;
+          respStatus.textContent = 'Spoken Response';
+          if (data.conversation_id) convId = data.conversation_id;
+
+          if (data.audio_path) {
+            audioPlayer.src = '/api/audio?path=' + encodeURIComponent(data.audio_path);
+            audioRow.style.display = 'flex';
+            audioPlayer.play().catch(e => {
+              console.log('Autoplay blocked by browser policy, user tap needed:', e);
+            });
+          }
+
+          if (data.summary && data.summary.last_visit && data.summary.last_visit.id) {
+            snapshotImg.src = '/api/snapshot?id=' + encodeURIComponent(data.summary.last_visit.id);
+            snapshotBox.style.display = 'block';
+          }
+        } else {
+          respText.textContent = 'No spoken response returned.';
+        }
+      } catch (err) {
+        respText.textContent = 'Error contacting Voice Assistant: ' + err.message;
+      } finally {
+        buttons.forEach(b => b.disabled = false);
+      }
+    }
+  </script>
+</body>
+</html>
