@@ -65,7 +65,7 @@ class BirdFeederRedirectView(HomeAssistantView):
     const port = {self.port};
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
-    const targetUrl = `${{protocol}}//${{hostname}}:${{port}}/`;
+    const targetUrl = `${{protocol}}//${{hostname}}:${{port}}/?ha=1`;
     const link = document.getElementById('open-link');
     if (link) link.href = targetUrl;
     window.location.replace(targetUrl);

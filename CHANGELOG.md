@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.9] - 2026-09-26
+
+### Changed
+- **Privacy & Role-Based Analytics Visibility**: Restricted the "📊 Analytics" link to only show when viewing the portal inside Home Assistant (sidebar panel iframe or `?ha=1`). Public internet visitors to `bf.bcardi.org` will not see or access the analytics link.
+
+---
+
 ## [1.0.8] - 2026-09-26
 
 ### Added

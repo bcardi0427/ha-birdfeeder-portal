@@ -254,13 +254,20 @@
 
     <div class="footer-note">
       Direct audio streamed from Home Assistant Cloud Voice<br>
-      <span id="statsLine" style="margin-top: 4px; display: inline-block; opacity: 0.85;">Loading stats...</span> • 
-      <a href="/stats" style="color: #58a6ff; text-decoration: none; font-weight: 500;">📊 Analytics</a>
+      <span id="statsLine" style="margin-top: 4px; display: inline-block; opacity: 0.85;">Loading stats...</span>
+      <span id="analyticsLinkContainer" style="display: none;"> • <a href="/stats" style="color: #58a6ff; text-decoration: none; font-weight: 500;">📊 Analytics</a></span>
     </div>
   </div>
 
   <script>
     let convId = null;
+
+    // Only display analytics dashboard link when viewed inside Home Assistant
+    const isInsideHA = (window.self !== window.top) || new URLSearchParams(window.location.search).has('ha');
+    if (isInsideHA) {
+      const container = document.getElementById('analyticsLinkContainer');
+      if (container) container.style.display = 'inline';
+    }
 
     async function loadStats() {
       try {
