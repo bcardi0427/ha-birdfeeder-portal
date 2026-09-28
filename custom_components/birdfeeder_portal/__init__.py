@@ -45,27 +45,27 @@ class BirdFeederRedirectView(HomeAssistantView):
         self.port = port
 
     async def get(self, request: web.Request) -> web.Response:
-        html = f"""<!DOCTYPE html>
+        html = """<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>Bird Feeder Portal</title>
   <style>
-    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 3rem 1rem; }}
-    a {{ color: #58a6ff; text-decoration: none; font-size: 1.1rem; }}
-    .btn {{ display: inline-block; background: #238636; color: white; padding: 0.8rem 1.6rem; border-radius: 8px; margin-top: 1.2rem; text-decoration: none; font-weight: bold; }}
-    .btn:hover {{ background: #2ea043; }}
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 3rem 1rem; }
+    a { color: #58a6ff; text-decoration: none; font-size: 1.1rem; }
+    .btn { display: inline-block; background: #238636; color: white; padding: 0.8rem 1.6rem; border-radius: 8px; margin-top: 1.2rem; text-decoration: none; font-weight: bold; }
+    .btn:hover { background: #2ea043; }
   </style>
 </head>
 <body>
   <h2>Loading Bird Feeder Portal...</h2>
-  <p>Connecting to port {self.port} on your network.</p>
+  <p>Connecting to port __PORT__ on your network.</p>
   <p><a id="open-link" class="btn" target="_blank" href="#">Open Portal in New Tab</a></p>
   <script>
-    const port = {self.port};
+    const port = __PORT__;
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
-    const targetUrl = `${{protocol}}//${{hostname}}:${{port}}/?ha=1`;
+    const targetUrl = `${protocol}//${hostname}:${port}/?ha=1`;
     const link = document.getElementById('open-link');
     if (link) {
       link.href = targetUrl;
@@ -75,10 +75,12 @@ class BirdFeederRedirectView(HomeAssistantView):
       });
     }
     // Auto-redirect after brief delay so the button is clickable
-    setTimeout(function() { window.location.replace(targetUrl); }, 800);
+    setTimeout(function() {
+      window.location.replace(targetUrl);
+    }, 800);
   </script>
 </body>
-</html>"""
+</html>""".replace("__PORT__", str(self.port))
         return web.Response(text=html, content_type="text/html", charset="utf-8")
 
 

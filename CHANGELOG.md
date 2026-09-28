@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.11] - 2026-09-28
+
+### Fixed
+- **Syntax Error Fix**: Fixed Python syntax error in redirect HTML template string that prevented integration from loading on Home Assistant startup.
+
+---
+
 ## [1.0.10] - 2026-09-28
 
 ### Fixed

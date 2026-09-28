@@ -9,6 +9,6 @@
   "issue_tracker": "https://github.com/bcardi0427/ha-birdfeeder-portal/issues",
   "requirements": [],
   "dependencies": ["conversation", "tts", "frontend", "http"],
-  "version": "1.0.10"
+  "version": "1.0.11"
 }
 
