@@ -67,8 +67,15 @@ class BirdFeederRedirectView(HomeAssistantView):
     const hostname = window.location.hostname;
     const targetUrl = `${{protocol}}//${{hostname}}:${{port}}/?ha=1`;
     const link = document.getElementById('open-link');
-    if (link) link.href = targetUrl;
-    window.location.replace(targetUrl);
+    if (link) {
+      link.href = targetUrl;
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.open(targetUrl, '_blank');
+      });
+    }
+    // Auto-redirect after brief delay so the button is clickable
+    setTimeout(function() { window.location.replace(targetUrl); }, 800);
   </script>
 </body>
 </html>"""

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.10] - 2026-09-28
+
+### Fixed
+- **HA Sidebar Button Fix**: The "Open Portal in New Tab" button on the HA redirect page now correctly opens the portal in a new browser tab. Added an explicit `click` event listener using `window.open()` to work around iframe sandbox restrictions that prevented `<a target="_blank">` from navigating. Also added a short 800 ms delay before the automatic redirect so the button is visible and clickable before the page navigates away.
+
+---
+
 ## [1.0.9] - 2026-09-26
 
 ### Changed
