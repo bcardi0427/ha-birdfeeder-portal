@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.12] - 2026-09-28
+
+### Fixed
+- **Pre-rendered Direct Links**: Pre-populated full server URL (`http://<host>:<port>/?ha=1`) directly in the redirect HTML response with `rel="noopener noreferrer"`.
+- **Fallback Links & UI**: Added clear card UI with visible URL text and external domain fallback link (`bf.bcardi.org`) to ensure immediate one-click navigation from any browser or companion app.
+
+---
+
 ## [1.0.11] - 2026-09-28
 
 ### Fixed

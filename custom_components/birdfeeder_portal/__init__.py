@@ -45,42 +45,98 @@ class BirdFeederRedirectView(HomeAssistantView):
         self.port = port
 
     async def get(self, request: web.Request) -> web.Response:
-        html = """<!DOCTYPE html>
+        host_header = request.headers.get("X-Forwarded-Host") or request.headers.get("Host") or "localhost"
+        host_name = host_header.split(":")[0]
+        http_url = f"http://{host_name}:{self.port}/?ha=1"
+
+        html = f"""<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bird Feeder Portal</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 3rem 1rem; }
-    a { color: #58a6ff; text-decoration: none; font-size: 1.1rem; }
-    .btn { display: inline-block; background: #238636; color: white; padding: 0.8rem 1.6rem; border-radius: 8px; margin-top: 1.2rem; text-decoration: none; font-weight: bold; }
-    .btn:hover { background: #2ea043; }
+    body {{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      margin: 0;
+      padding: 1.5rem;
+    }}
+    .card {{
+      max-width: 480px;
+      width: 100%;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }}
+    h2 {{ color: #ffffff; margin-top: 0; font-size: 1.4rem; }}
+    p {{ color: #8b949e; line-height: 1.5; font-size: 0.95rem; margin: 0.8rem 0; }}
+    .btn {{
+      display: inline-block;
+      background: #238636;
+      color: white !important;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      margin-bottom: 0.75rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: background 0.2s;
+    }}
+    .btn:hover {{ background: #2ea043; }}
+    .url-display {{
+      margin-top: 0.75rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+    }}
+    .url-display a {{ color: #58a6ff; text-decoration: none; }}
+    .url-display a:hover {{ text-decoration: underline; }}
+    .external-link {{
+      display: block;
+      margin-top: 1.5rem;
+      color: #58a6ff;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }}
+    .external-link:hover {{ text-decoration: underline; }}
   </style>
 </head>
 <body>
-  <h2>Loading Bird Feeder Portal...</h2>
-  <p>Connecting to port __PORT__ on your network.</p>
-  <p><a id="open-link" class="btn" target="_blank" href="#">Open Portal in New Tab</a></p>
+  <div class="card">
+    <h2>🐦 Bird Feeder Portal</h2>
+    <p>Connecting to dedicated portal on port {self.port}...</p>
+    <a id="open-link" class="btn" target="_blank" rel="noopener noreferrer" href="{http_url}">Open Portal in New Tab</a>
+    <div class="url-display"><a id="url-text" href="{http_url}" target="_blank" rel="noopener noreferrer">{http_url}</a></div>
+    <a class="external-link" href="https://bf.bcardi.org/" target="_blank" rel="noopener noreferrer">Or open via External Domain (bf.bcardi.org) →</a>
+  </div>
   <script>
-    const port = __PORT__;
-    const protocol = window.location.protocol;
-    const hostname = window.location.hostname;
-    const targetUrl = `${protocol}//${hostname}:${port}/?ha=1`;
-    const link = document.getElementById('open-link');
-    if (link) {
-      link.href = targetUrl;
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.open(targetUrl, '_blank');
-      });
-    }
-    // Auto-redirect after brief delay so the button is clickable
-    setTimeout(function() {
+    const port = {self.port};
+    const hostname = window.location.hostname || "{host_name}";
+    const targetUrl = "http://" + hostname + ":" + port + "/?ha=1";
+    const link = document.getElementById("open-link");
+    const urlText = document.getElementById("url-text");
+    if (link) link.href = targetUrl;
+    if (urlText) {{
+      urlText.href = targetUrl;
+      urlText.textContent = targetUrl;
+    }}
+    // Automatically redirect inside the iframe if possible
+    try {{
       window.location.replace(targetUrl);
-    }, 800);
+    }} catch (e) {{}}
   </script>
 </body>
-</html>""".replace("__PORT__", str(self.port))
+</html>"""
         return web.Response(text=html, content_type="text/html", charset="utf-8")
 
 
