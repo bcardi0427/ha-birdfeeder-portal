@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.13] - 2026-09-28
+
+### Fixed
+- **Domain-Aware Routing for `haos.bcardi.org`**: Added automatic hostname detection in redirect view. When accessing Home Assistant through `haos.bcardi.org`, the portal button routes directly to `https://bf.bcardi.org/?ha=1` instead of unreachable port 8195. When accessed locally via IP/LAN, it routes to `http://<ip>:8195/?ha=1`.
+
+---
+
 ## [1.0.12] - 2026-09-28
 
 ### Fixed

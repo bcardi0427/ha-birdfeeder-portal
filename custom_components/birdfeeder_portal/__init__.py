@@ -47,7 +47,15 @@ class BirdFeederRedirectView(HomeAssistantView):
     async def get(self, request: web.Request) -> web.Response:
         host_header = request.headers.get("X-Forwarded-Host") or request.headers.get("Host") or "localhost"
         host_name = host_header.split(":")[0]
-        http_url = f"http://{host_name}:{self.port}/?ha=1"
+
+        if host_name.endswith("bcardi.org"):
+            primary_url = "https://bf.bcardi.org/?ha=1"
+            secondary_url = f"http://{host_name}:{self.port}/?ha=1"
+            secondary_label = f"Or open via local network ({secondary_url}) →"
+        else:
+            primary_url = f"http://{host_name}:{self.port}/?ha=1"
+            secondary_url = "https://bf.bcardi.org/?ha=1"
+            secondary_label = "Or open via External Domain (bf.bcardi.org) →"
 
         html = f"""<!DOCTYPE html>
 <html>
@@ -114,15 +122,20 @@ class BirdFeederRedirectView(HomeAssistantView):
 <body>
   <div class="card">
     <h2>🐦 Bird Feeder Portal</h2>
-    <p>Connecting to dedicated portal on port {self.port}...</p>
-    <a id="open-link" class="btn" target="_blank" rel="noopener noreferrer" href="{http_url}">Open Portal in New Tab</a>
-    <div class="url-display"><a id="url-text" href="{http_url}" target="_blank" rel="noopener noreferrer">{http_url}</a></div>
-    <a class="external-link" href="https://bf.bcardi.org/" target="_blank" rel="noopener noreferrer">Or open via External Domain (bf.bcardi.org) →</a>
+    <p>Connecting to Bird Feeder Portal...</p>
+    <a id="open-link" class="btn" target="_blank" rel="noopener noreferrer" href="{primary_url}">Open Portal in New Tab</a>
+    <div class="url-display"><a id="url-text" href="{primary_url}" target="_blank" rel="noopener noreferrer">{primary_url}</a></div>
+    <a class="external-link" id="alt-link" href="{secondary_url}" target="_blank" rel="noopener noreferrer">{secondary_label}</a>
   </div>
   <script>
     const port = {self.port};
     const hostname = window.location.hostname || "{host_name}";
-    const targetUrl = "http://" + hostname + ":" + port + "/?ha=1";
+    let targetUrl;
+    if (hostname.endsWith("bcardi.org")) {{
+      targetUrl = "https://bf.bcardi.org/?ha=1";
+    }} else {{
+      targetUrl = "http://" + hostname + ":" + port + "/?ha=1";
+    }}
     const link = document.getElementById("open-link");
     const urlText = document.getElementById("url-text");
     if (link) link.href = targetUrl;
