@@ -1,0 +1,10 @@
+{
+  "current_objective": "Fix HA sidebar portal redirect button and implement domain-aware routing",
+  "why": "Ensure portal opens reliably from iframe sandbox across both local IP and external haos.bcardi.org domain",
+  "active_problems": [],
+  "completed_milestones": [
+    "Implemented pre-rendered redirect links, domain-aware routing (bf.bcardi.org for haos.bcardi.org vs port 8195 for local LAN IP), fixed f-string syntax in __init__.py, and published v1.0.10 through v1.0.13"
+  ],
+  "next_step": "Monitor portal stability and referrer analytics",
+  "last_updated": "2026-10-01 23:13:58"
+}
